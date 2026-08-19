@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#9b642b" />
+  <meta name="description" content="LGY Boulangerie Pâtisserie au Horps — commande de gâteaux artisanaux et retrait en boutique." />
+  <title>LGY.fr — Gâteaux artisanaux au Horps</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/android-chrome-192.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta property="og:image" content="/assets/logo-lgy.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#app">Aller au contenu</a>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Accueil LGY"><img src="/assets/logo-lgy.webp" alt="LGY Boulangerie Pâtisserie Le Horps" /></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mainNav"><span></span><span></span><span></span></button>
+    <nav id="mainNav" aria-label="Navigation principale">
+      <a href="/">Accueil</a><a href="/boutique">Notre boutique</a><a href="/suivi">Suivi commande</a>
+    </nav>
+    <div class="header-actions">
+      <a class="admin-link" id="accountLink" href="/compte" aria-label="Créer un compte ou se connecter" title="Mon compte"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.8 20c.8-4 3.2-6 7.2-6s6.4 2 7.2 6"></path></svg></a>
+      <a class="cart-link" href="/panier" data-cart-open aria-label="Voir le panier"><span class="cart-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></span><span class="cart-label">Panier</span><span id="cartCount">0</span></a>
+    </div>
+  </header>
+  
+  <section class="site-values-bar" aria-label="Nos engagements">
+    <div class="site-values-inner">
+      <span class="values-label">Nos engagements</span>
+      <span class="site-value"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="17" r="2.2"></circle><circle cx="18" cy="7" r="2.2"></circle><path d="M8 16c2.4-.3 3.1-2 4-4s2.3-3.7 4-4"></path><path d="M4 6h5"></path><path d="m7 3 3 3-3 3"></path></svg><b>Circuit court</b></span>
+      <span class="site-value"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 4.5C12 4.5 7.2 8.1 6.1 13.4c4.2.7 8.4-1.1 10.9-4.8-2 4.6-5.4 7.5-10.4 8.4"></path><path d="M6.6 17c-1.1.6-2 1.5-2.6 2.5"></path></svg><b>Produits locaux</b></span>
+      <span class="values-origin">Le Horps · Mayenne</span>
+    </div>
+  </section>
+  <main id="app" tabindex="-1"></main>
+  <footer>
+    <div class="footer-brand-block">
+      <div class="footer-brand"><img src="/assets/logo-lgy.webp" alt="LGY" /><div><strong>LGY Boulangerie Pâtisserie</strong><span>Brioches & produits secs artisanaux</span></div></div>
+      <div class="footer-badges" aria-label="Nos engagements">
+        <span class="footer-badge"><i aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.7-2.5 7.8-7 10-4.5-2.2-7-5.3-7-10V6l7-3Z"></path><path d="m9 12 2 2 4-4"></path></svg></i><b>Site sécurisé</b></span>
+        <span class="footer-badge"><i aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="17" r="2.2"></circle><circle cx="18" cy="7" r="2.2"></circle><path d="M8 16c2.4-.3 3.1-2 4-4s2.3-3.7 4-4"></path><path d="M4 6h5"></path><path d="m7 3 3 3-3 3"></path></svg></i><b>Circuit court</b></span>
+        <span class="footer-badge"><i aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 4.5C12 4.5 7.2 8.1 6.1 13.4c4.2.7 8.4-1.1 10.9-4.8-2 4.6-5.4 7.5-10.4 8.4"></path><path d="M6.6 17c-1.1.6-2 1.5-2.6 2.5"></path></svg></i><b>Produits locaux</b></span>
+      </div>
+    </div>
+    <div><strong>Le Horps</strong><br><a href="tel:+33236027094">02 36 02 70 94</a></div>
+    <div><strong>Navigation</strong><br><a href="/boutique">Boutique</a><br><a href="/suivi">Suivi commande</a></div><div><strong>Informations</strong><br><a href="/mentions-legales">Mentions légales</a><br><a href="/cgv">CGV</a><br><a href="/confidentialite">Confidentialité</a><br><a href="/cookies">Cookies</a><br><button type="button" class="footer-cookie-btn" data-manage-cookies>Gérer mes cookies</button></div>
+    <div>© <span id="year"></span> LGY.fr</div>
+  </footer>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
+    <a href="/" data-mobile-route="/">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 8-7 8 7"></path><path d="M6.5 10.5V20h11v-9.5"></path></svg></span><small>Accueil</small>
+    </a>
+    <a href="/boutique" data-mobile-route="/boutique">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1-4H5L4 8Z"></path><path d="M5 8v12h14V8"></path><path d="M9 20v-6h6v6"></path></svg></span><small>Boutique</small>
+    </a>
+    <a href="/suivi" data-mobile-route="/suivi">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path><path d="M11 8v3l2 1"></path></svg></span><small>Suivi</small>
+    </a>
+    <a href="/compte" data-mobile-route="/compte">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.8 20c.8-4 3.2-6 7.2-6s6.4 2 7.2 6"></path></svg></span><small>Compte</small>
+    </a>
+    <a href="/panier" data-cart-open data-mobile-route="/panier" class="mobile-cart">
+      <span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></span><small>Panier</small><b id="mobileCartCount">0</b>
+    </a>
+  </nav>
+  <div class="cart-drawer-backdrop" id="cartDrawerBackdrop" hidden></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Panier">
+    <div class="cart-drawer-head"><div><small>Votre sélection</small><h2>Panier</h2></div><button type="button" class="drawer-close" data-drawer-close aria-label="Fermer le panier">×</button></div>
+    <div id="cartDrawerBody"></div>
+  </aside>
+
+  <section class="cookie-banner" id="cookieBanner" hidden aria-label="Gestion des cookies">
+    <div class="cookie-banner-copy">
+      <strong>Mesure d’audience et cookies</strong>
+      <p>Avec votre accord, LGY utilise Google Analytics pour mesurer la fréquentation et améliorer le site. Aucun traceur de mesure d’audience n’est chargé avant votre choix.</p>
+      <a href="/cookies">En savoir plus</a>
+    </div>
+    <div class="cookie-banner-actions">
+      <button class="btn secondary" type="button" data-consent-reject>Tout refuser</button>
+      <button class="btn secondary" type="button" data-consent-customize>Personnaliser</button>
+      <button class="btn" type="button" data-consent-accept>Tout accepter</button>
+    </div>
+  </section>
+  <div class="cookie-modal-backdrop" id="cookieModalBackdrop" hidden></div>
+  <section class="cookie-modal" id="cookieModal" hidden role="dialog" aria-modal="true" aria-labelledby="cookieModalTitle">
+    <div class="cookie-modal-head"><div><small>Confidentialité</small><h2 id="cookieModalTitle">Gérer mes cookies</h2></div><button type="button" class="drawer-close" data-consent-close aria-label="Fermer">×</button></div>
+    <div class="cookie-category essential"><div><div><b>Cookies nécessaires</b><p>Panier, sécurité, connexion et mémorisation de votre choix. Ils sont nécessaires au fonctionnement du site.</p></div><span>Toujours actifs</span></div></div>
+    <label class="cookie-category">
+      <div><div><b>Mesure d’audience</b><p>Google Analytics 4, uniquement si vous l’acceptez. Cette catégorie permet de comprendre les pages consultées et l’usage général du site.</p></div><input id="analyticsConsentToggle" type="checkbox"></div>
+    </label>
+    <div class="cookie-modal-actions"><button class="btn secondary" type="button" data-consent-reject>Tout refuser</button><button class="btn" type="button" data-consent-save>Enregistrer mes choix</button></div>
+  </section>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

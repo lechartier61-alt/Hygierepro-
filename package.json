@@ -1,0 +1,15 @@
+{
+  "name": "lgy-fr",
+  "version": "0.7.6",
+  "private": true,
+  "description": "LGY.fr V7.6 — mise en avant Circuit court et Produits locaux sur toutes les pages publiques",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "hash-password": "node scripts/hash-password.js",
+    "check": "node --check server.js && node --check public/app.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

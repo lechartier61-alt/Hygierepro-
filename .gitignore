@@ -1,0 +1,34 @@
+# Dépendances
+node_modules/
+
+# Secrets et configuration locale
+.env
+.env.*
+!.env.example
+
+# Journaux et fichiers temporaires
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+
+# Données locales générées par l'application
+# Conserver les fichiers exemples suivis dans Git, mais ignorer les sauvegardes.
+data/*.tmp
+data/*.bak
+data/backups/
+
+# Outils / éditeurs
+.vscode/
+.idea/
+
+# Couverture et builds
+coverage/
+dist/
+build/
+
+# Secrets générés automatiquement au premier démarrage
+data/.token-secret
+data/.admin-bootstrap.json
