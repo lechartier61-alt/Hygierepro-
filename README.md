@@ -1,92 +1,131 @@
-# LGY.fr V5 — boutique paramétrable
+# HygieSafe v6.5.7
 
-Cette version consolide le prototype LGY avec un parcours client plus fluide et une administration davantage paramétrable.
+Plateforme SaaS HACCP multi-entreprise : contrôles, températures, DLC/DDM, traçabilité, inventaire, fournisseurs, commandes, documents, équipe, facturation et administration globale.
 
-## Fonctionnalités opérationnelles
+## État de cette version
 
-- catalogue, fiches produits, tailles et messages personnalisés ;
-- panier avec modification des quantités ;
-- codes promotionnels recalculés côté serveur ;
-- retrait ou livraison selon les paramètres administrateur ;
-- frais de livraison et seuil de gratuité ;
-- codes postaux autorisés ;
-- dates minimales, jours fermés, créneaux et capacité maximale ;
-- protection contre les doubles commandes par clé d’idempotence ;
-- suivi sécurisé par numéro de commande et jeton secret ;
-- fidélité calculée en points ;
-- dashboard, commandes, clients, produits, promotions et paramètres ;
-- sécurité V4 conservée : CSP, CSRF, cookies HttpOnly, scrypt, rate limiting, audit et validation serveur.
+Base sécurité issue de la v6.3.0 (audit statique **9,6/10**) + module **Facture → tableau de commandes**, **sauvegarde ZIP complète** et **Resend** pour les e-mails transactionnels.
 
+Nouveautés v6.3.2 : le gérant peut télécharger une sauvegarde ZIP autonome classée année/mois/jour avec traçabilité, photos, documents, factures et commandes. Resend est prioritaire pour les e-mails de vérification, invitation et réinitialisation.
 
-## Démarrage automatique sur Railway
+Principaux renforcements : vérification e-mail, sessions/CSRF, rate limiting PostgreSQL, 2FA admin chiffrée, uploads contrôlés par signature, stockage persistant, Stripe idempotent avec verrou Checkout, protection CSV, rétention, PWA et pages légales.
 
-La V5.1 ne plante plus si les secrets ne sont pas encore configurés. Au premier démarrage, une clé de session et un mot de passe administrateur temporaire sont générés. Le mot de passe apparaît une seule fois dans les logs Railway. Consultez `RAILWAY.md` pour les étapes complètes.
-
-## Démarrage
+## Installation
 
 ```bash
-cp .env.example .env
-npm run hash-password -- "VotreMotDePasseLong"
-# Reporter le hash dans ADMIN_PASSWORD_HASH
+npm install
+npm run migrate
 npm start
 ```
 
-Ouvrir `http://localhost:3000`.
+En production, les migrations sont exécutées avant le démarrage via Railway/Docker.
 
-## Paramètres modifiables depuis l’administration
-
-Nom, téléphone, e-mail, adresse, titre et texte d’accueil, bandeau promotionnel, délai de préparation, commande minimum, frais et seuil de livraison gratuite, zones postales, créneaux, capacité par créneau, retrait, livraison et fidélité.
-
-## Limites avant exploitation commerciale
-
-Stripe, PostgreSQL, e-mails transactionnels, stockage d’images, sauvegardes externes, 2FA et rôles avancés nécessitent des services et clés de production. Aucun numéro de carte n’est stocké par cette application.
-
-## Publier le projet sur GitHub
-
-Le dépôt configuré est : `https://github.com/lechartier61-alt/LGY.git`.
-
-### Méthode automatique sous Windows
-
-1. Décompressez le projet.
-2. Ouvrez le dossier `LGY-fr-MVP`.
-3. Double-cliquez sur `push-github.cmd`, ou ouvrez Git Bash dans ce dossier.
-4. Dans Git Bash, lancez :
+## Vérifications
 
 ```bash
-./push-github.sh
+npm test
+npm run test:scanner
+npm run test:smoke
 ```
 
-Le script initialise Git, configure la branche `main`, ajoute le dépôt distant, crée le commit et lance le push.
+`test:smoke` nécessite une instance de test avec PostgreSQL et `NODE_ENV=test`.
 
-Lors de la première authentification, GitHub peut ouvrir une fenêtre de navigateur. GitHub n'accepte plus le mot de passe du compte pour les opérations Git en HTTPS : utilisez la connexion proposée par Git Credential Manager ou un jeton d'accès personnel.
+## Production Railway
 
-### Commandes manuelles équivalentes
+À configurer obligatoirement ou selon les fonctions utilisées :
 
-```bash
-git init
-git branch -M main
-git remote add origin https://github.com/lechartier61-alt/LGY.git
-git add .
-git commit -m "Initialisation LGY.fr V5"
-git push -u origin main
+- `DATABASE_URL`
+- `APP_URL`
+- `PUBLIC_SITE_URL`
+- `RAILWAY_PUBLIC_DOMAIN`
+- `SESSION_COOKIE_SECURE=true`
+- `FIELD_ENCRYPTION_KEY` (32+ caractères)
+- stockage persistant : S3 **ou** `UPLOAD_DIR` vers un Railway Volume
+- Resend (`RESEND_API_KEY` + `RESEND_FROM`) pour les inscriptions/vérifications e-mail ; SMTP reste disponible en secours
+- Stripe + `STRIPE_WEBHOOK_SECRET` lorsque la facturation est activée
+- variables `LEGAL_*` avant commercialisation
+
+Voir `DEPLOIEMENT-RAILWAY.md` et `.env.example`.
+
+
+## Compte test client (v6.3.3)
+Dans **Admin → Entreprises**, utilisez **+ Compte test client**. HygieSafe crée un établissement de démonstration avec un gérant propriétaire, une adresse e-mail déjà vérifiée et un mot de passe aléatoire affiché une seule fois. Le compte dispose de 30 jours d’essai et peut être supprimé depuis l’admin après les tests.
+
+
+## Correctif v6.4.2
+
+La v6.4.2 corrige l'erreur PostgreSQL `42P08 (uuid versus text)` qui empêchait la création d'un nouveau compte dans la v6.4.1.
+
+
+## Domaine officiel HygieSafe — v6.4.4
+
+Sur Railway, utilisez le domaine public comme URL canonique :
+
+```text
+APP_URL=https://www.hygiesafe.com
+PUBLIC_SITE_URL=https://www.hygiesafe.com
+ALLOWED_ORIGINS=https://www.hygiesafe.com,https://hygiesafe.com
 ```
 
-Ne publiez jamais le fichier `.env`. Il est déjà exclu par `.gitignore`.
+Le middleware autorise désormais automatiquement une requête navigateur dont `Origin` correspond réellement au `Host` reçu par Railway, tout en refusant les origines tierces. `ALLOWED_ORIGINS` sert aux alias voulus.
+
+## Mentions légales intégrées
+
+La v6.4.4 préremplit : LIVRICI SOLUTIONS SAS, capital 2 €, SIREN/SIRET, RCS Vannes, TVA, NAF, siège et directeur de publication. L'hébergeur Railway Corporation est également renseigné.
+
+Deux informations doivent encore être saisies dans **Admin > Accueil public > Informations légales** avant ouverture commerciale :
+
+- une adresse e-mail de contact réellement consultée ;
+- un numéro de téléphone permettant de joindre l'entreprise.
 
 
-## Espace client V6.2
+## v6.4.5 — juridique simplifié
+Les mentions légales publiques et le formulaire admin ont été allégés pour retirer les champs redondants ou non nécessaires à l’affichage public. Voir `MODIFICATIONS-v6.4.5.md`.
 
-Cette version ajoute :
 
-- création de compte client sécurisée ;
-- connexion et déconnexion ;
-- session client HttpOnly valable 30 jours ;
-- modification du profil ;
-- changement de mot de passe ;
-- carnet d’adresses ;
-- historique des commandes ;
-- total dépensé et points fidélité ;
-- rattachement automatique des nouvelles commandes au compte connecté ;
-- protection CSRF et limitation des tentatives de connexion/inscription.
+## v6.4.6 — FAQ dédiée
+La section FAQ de l’accueil a été remplacée par une page FAQ dédiée avec 14 questions/réponses, recherche instantanée et liens depuis le pied de page public.
 
-Les comptes sont actuellement conservés dans `data/customers.json`. Pour une exploitation à grande échelle, migrez les clients et commandes vers PostgreSQL.
+
+## v6.4.7 — identité HygieSafe + températures liées aux horaires
+
+- Les principaux emojis et pictogrammes génériques de l’interface ont été remplacés par le pack d’icônes officiel HygieSafe (vert, anthracite et blanc).
+- Dans **Équipe → Horaires**, le gérant ou un responsable peut définir les jours et heures de travail d’un compte employé.
+- Pour un horaire **07:00 → 14:00**, les relevés de température de l’employé n’apparaissent qu’à **07:00 (arrivée)** puis **14:00 (départ)**.
+- Une alerte dédiée apparaît sur le compte employé dès qu’un relevé est dû. Après 30 minutes, l’alerte passe en retard.
+- Le serveur refuse un relevé employé tenté avant l’heure prévue ou déjà réalisé. Le gérant et les responsables conservent le relevé manuel.
+- Les horaires de l’équipe sont inclus dans la sauvegarde ZIP complète.
+
+
+## v6.5.6 — Base Produits Internet
+
+Le Scanner Pro recherche désormais automatiquement un EAN/GTIN dans cet ordre : **catalogue de l’établissement → nom déjà confirmé dans l’établissement → Open Food Facts → UPCitemdb**. Open Food Facts est consulté à la demande avec attribution ODbL et ses fiches ne sont plus persistées dans le cache propriétaire HygieSafe. UPCitemdb reste un secours et peut utiliser un cache technique dédié.
+
+Après validation, HygieSafe mémorise pour l’établissement le **code-barres et le nom opérationnel confirmé par l’utilisateur**. Les métadonnées externes Open Food Facts (image, allergènes, catégories, etc.) ne sont pas recopiées dans ce catalogue local. Un produit inconnu peut être nommé manuellement puis mémorisé.
+
+La vérification **Verified by GS1** reste accessible par lien depuis le scanner. Elle n’est pas automatisée sans accès API GS1 fourni par une organisation membre GS1.
+
+Variables facultatives :
+
+```text
+PRODUCT_LOOKUP_OPENFOODFACTS=true
+PRODUCT_LOOKUP_UPCITEMDB=true
+PRODUCT_LOOKUP_TIMEOUT_MS=4500
+UPCITEMDB_USER_KEY=
+UPCITEMDB_KEY_TYPE=3scale
+```
+
+Sans clé UPCitemdb, HygieSafe utilise leur endpoint Trial. Les erreurs, délais ou quotas d’une source externe ne bloquent jamais la création d’une traçabilité.
+
+
+## v6.5.7 — Durcissement production
+
+- corrections Employé limitées à ses propres saisies pendant 15 minutes ; chaque modification journalise l’état avant/après ;
+- suppression des preuves médias protégée et refusée lorsqu’un fichier est déjà rattaché ;
+- file hors-ligne liée à l’utilisateur et à l’entreprise ;
+- sessions Scanner Pro d’un employé isolées de celles de ses collègues ;
+- pointeuse d’un employé visible uniquement par lui côté API utilisateur standard ;
+- données Open Food Facts consultées à la demande sans cache persistant de fiche ;
+- coordonnées juridiques e-mail/téléphone exigées lors de l’enregistrement Admin ;
+- CGV et politique de confidentialité complétées ;
+- la promesse publique de « sauvegarde serveur automatique » est remplacée par « sauvegarde ZIP complète à télécharger ».

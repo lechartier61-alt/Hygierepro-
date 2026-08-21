@@ -1,10 +1,19 @@
-'use strict';
-const CACHE='lgy-v7-6-local-values';
-const ASSETS=['/','/styles.css','/app.js','/manifest.webmanifest','/favicon.ico','/assets/logo-lgy.webp','/assets/apple-touch-icon.png','/assets/android-chrome-192.png','/assets/android-chrome-512.png','/assets/maskable-icon-512.png'];
-self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)))});
-self.addEventListener('activate',event=>event.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))])));
-self.addEventListener('fetch',event=>{
-  const url=new URL(event.request.url);
-  if(event.request.method!=='GET'||url.origin!==self.location.origin||url.pathname.startsWith('/api/')||url.pathname.includes('/admin'))return;
-  event.respondWith(fetch(event.request).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy))}return response}).catch(()=>caches.match(event.request)));
+const CACHE='hygiesafe-v6.5.7-shell';
+const ASSETS=['/app.html','/css/app.css','/css/main.css','/js/app.js','/js/api.js','/assets/logo-hygiesafe.png','/assets/icon-192.png','/assets/icon-512.png','/assets/hygiesafe-icons/home.png','/assets/hygiesafe-icons/profile.png','/assets/hygiesafe-icons/team.png','/assets/hygiesafe-icons/scanner.png','/assets/hygiesafe-icons/temperature.png','/assets/hygiesafe-icons/controls.png','/assets/hygiesafe-icons/schedule.png','/assets/hygiesafe-icons/inventory.png','/assets/hygiesafe-icons/orders.png','/assets/hygiesafe-icons/archive.png'];
+const NEVER_CACHE=['/api/','/public-media/','/login','/register','/forgot','/reset','/invite','/verify-email','/admin'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{
+  const req=e.request;if(req.method!=='GET')return;
+  const u=new URL(req.url);if(u.origin!==self.location.origin||NEVER_CACHE.some(p=>u.pathname.startsWith(p)))return;
+  if(req.mode==='navigate'){
+    if(u.pathname!=='/app.html'&&!u.pathname.startsWith('/app'))return;
+    e.respondWith(fetch(req).catch(()=>caches.match('/app.html')));return;
+  }
+  const staticAsset=/\.(?:css|js|png|jpg|jpeg|webp|svg|woff2?)$/i.test(u.pathname);
+  if(!staticAsset)return;
+  e.respondWith(caches.match(req).then(cached=>{
+    const fresh=fetch(req).then(r=>{if(r.ok)caches.open(CACHE).then(c=>c.put(req,r.clone()));return r}).catch(()=>cached);
+    return cached||fresh;
+  }));
 });

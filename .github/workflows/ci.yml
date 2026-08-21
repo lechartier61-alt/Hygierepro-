@@ -1,0 +1,43 @@
+name: HygieSafe CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: hygiepro
+          POSTGRES_PASSWORD: hygiepro
+          POSTGRES_DB: hygiepro_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://hygiepro:hygiepro@127.0.0.1:5432/hygiepro_test
+      DATABASE_SSL: 'false'
+      NODE_ENV: test
+      APP_URL: http://127.0.0.1:3000
+      SESSION_COOKIE_SECURE: 'false'
+      ADMIN_EMAIL: admin@example.test
+      ADMIN_PASSWORD: AdminSmokePassword!2026
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run test
+      - run: npm run migrate
+      - run: npm run seed:admin
+      - run: npm start > /tmp/hygiepro.log 2>&1 &
+      - run: |
+          for i in {1..30}; do curl -fsS http://127.0.0.1:3000/health && break; sleep 1; done
+      - run: npm run test:smoke

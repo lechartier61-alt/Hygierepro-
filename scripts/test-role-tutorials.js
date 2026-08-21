@@ -1,0 +1,16 @@
+import fs from 'node:fs';import path from 'node:path';
+const root=path.resolve(new URL('..',import.meta.url).pathname);let p=0,f=0;const t=(n,c)=>{if(c){p++;console.log('✓',n)}else{f++;console.error('✗',n)}};const read=x=>fs.readFileSync(path.join(root,x),'utf8');
+const app=read('public/app.html'),js=read('public/js/app.js'),css=read('public/css/app.css'),auth=read('src/routes/auth.js'),account=read('src/routes/account.js'),mig=read('db/migrations/021_role_tutorials_ux.sql');
+t('page Aide présente',app.includes('id="page-help"')&&app.includes('id="helpContent"'));
+t('bouton Aide global',app.includes('id="helpBtn"'));
+t('carte prise en main Aujourd’hui',app.includes('id="roleWelcome"'));
+t('3 tutoriels de rôle',js.includes("owner:{title:'Tutoriel Gérant'")&&js.includes("manager:{title:'Tutoriel Responsable'")&&js.includes("employee:{title:'Tutoriel Employé'"));
+t('chaque tutoriel a au moins 6 étapes',(js.match(/title:'[1-6]\./g)||[]).length>=18);
+t('gérant : équipe + équipements + rapports',js.includes("title:'3. Organisez votre équipe'")&&js.includes("title:'2. Configurez vos équipements'")&&js.includes("title:'6. Gardez vos preuves accessibles'"));
+t('responsable : horaires + contrôles',js.includes("title:'3. Gérez les horaires employés'")&&js.includes("title:'2. Supervisez les contrôles'"));
+t('employé : température 07:00–14:00 expliquée',js.includes('07:00–14:00')&&js.includes("title:'2. Les températures arrivent à la bonne heure'"));
+t('progression sauvegardée en base',mig.includes('ux_tutorial_version')&&account.includes("r.patch('/tutorial'")&&auth.includes('tutorialVersion'));
+t('tutoriel rejouable',app.includes('id="replayMyTutorial"')&&js.includes('openRoleTutorial'));
+t('aide mobile lisible',css.includes('.page-head p{display:block!important'));
+t('menu adapté par rôle',js.includes('const management=')&&js.includes('if(isManager())items.push'));
+console.log(`Tutoriels & UX rôles : ${p}/${p+f}`);if(f)process.exit(1);

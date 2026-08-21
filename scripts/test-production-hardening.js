@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+let pass=0,fail=0;const root=new URL('..',import.meta.url).pathname;const read=f=>fs.readFileSync(root+f,'utf8');function check(ok,msg){if(ok){pass++;console.log('✓',msg)}else{fail++;console.error('✗',msg)}}
+const records=read('/src/routes/records.js'),media=read('/src/routes/media.js'),api=read('/public/js/api.js'),app=read('/public/js/app.js'),scanner=read('/src/routes/scanner.js'),lookup=read('/src/services/product-lookup.js'),home=read('/public/index.html'),cgv=read('/public/cgv.html'),privacy=read('/public/privacy.html'),env=read('/.env.example'),admin=read('/src/routes/admin.js'),migration=read('/db/migrations/028_production_hardening_657.sql');
+check(records.includes('EMPLOYEE_EDIT_WINDOW_MS=15*60*1000'),'fenêtre de correction employé 15 min');
+check(records.includes('current.created_by===req.user.id')&&records.includes("record_edit_forbidden"),'employé limité à ses propres saisies');
+check(records.includes('before,after:revisionSnapshot'),'audit avant/après des corrections');
+check(media.includes('media_in_use')&&media.includes('uploaded_by!==req.user.id'),'suppression média protégée');
+check(api.includes('organizationId:offlineScope.organizationId')&&api.includes('item.organizationId!==me.organization.id'),'file hors ligne liée au compte et entreprise');
+check(app.includes('setOfflineScope(state.me.user?.id,state.me.organization?.id)'),'identité hors ligne initialisée après authentification');
+check(scanner.includes('assertSessionWrite(req,session)')||scanner.includes('assertSessionWrite(req,s)'),'sessions scanner protégées par propriétaire pour employé');
+check(scanner.includes("allowRename:req.user.role!=='employee'"),'employé ne peut pas renommer un produit partagé existant');
+check(records.includes("r.type<>'timeclock' OR r.created_by"),'pointeuse des collègues masquée aux employés');
+check(!lookup.includes("writeCache(barcode,{status:'found',source:'open_food_facts'"),'Open Food Facts non persisté dans cache');
+check(lookup.includes("source=external?'manual_confirmation'")&&lookup.includes('brand=external?null'),'mémoire externe réduite au nom confirmé');
+check(migration.includes("DELETE FROM external_product_cache WHERE source IS DISTINCT FROM 'upcitemdb'"),'ancien cache externe nettoyé');
+check(home.includes('Sauvegarde ZIP complète à télécharger')&&!home.includes('Sauvegarde serveur automatique'),'promesse sauvegarde corrigée');
+check(cgv.includes('Banque centrale européenne')&&cgv.includes('40 €'),'CGV pénalités explicites');
+check(privacy.includes('Caractère obligatoire des données')&&privacy.includes('Décisions automatisées'),'confidentialité complétée');
+check(env.includes('APP_URL=https://www.hygiesafe.com')&&env.includes('SMTP_FROM=HygieSafe <noreply@mail.hygiesafe.com>'),'domaine exemple corrigé');
+check(admin.includes('legal_contact_required'),'coordonnées légales exigées par le serveur admin');
+if(fail)process.exit(1);console.log(`Durcissement production v6.5.7 : ${pass}/${pass+fail}`);

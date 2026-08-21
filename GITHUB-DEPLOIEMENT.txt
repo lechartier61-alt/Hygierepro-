@@ -1,2 +1,0 @@
-Dépôt GitHub configuré : https://github.com/lechartier61-alt/LGY.git
-Lanceur : push-github-remplacer.sh

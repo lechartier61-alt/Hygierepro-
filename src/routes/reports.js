@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { q } from '../db.js';
+import { asyncRoute } from '../utils/http.js';
+import { requireUser,roles } from '../middleware/auth.js';
+import { csvCell } from '../utils/csv.js';
+import { buildHaccpPdf } from '../services/report.js';
+const r=Router();
+r.get('/haccp.pdf',requireUser,roles('owner','manager'),asyncRoute(async(req,res)=>{const org=(await q('SELECT * FROM organizations WHERE id=$1',[req.user.organization_id])).rows[0];const records=(await q(`SELECT * FROM records WHERE organization_id=$1 AND occurred_at>=now()-interval '90 days' ORDER BY occurred_at DESC`,[req.user.organization_id])).rows;const pdf=await buildHaccpPdf({organization:org,records,user:req.user});res.type('application/pdf').set('Content-Disposition',`attachment; filename="hygiesafe-${org.slug}-rapport.pdf"`).send(pdf);}));
+r.get('/export.csv',requireUser,roles('owner','manager'),asyncRoute(async(req,res)=>{const rows=(await q(`SELECT type,title,status,occurred_at,payload FROM records WHERE organization_id=$1 ORDER BY occurred_at DESC`,[req.user.organization_id])).rows;const esc=csvCell;const csv=['type;titre;statut;date;donnees',...rows.map(x=>[x.type,x.title,x.status,x.occurred_at,JSON.stringify(x.payload)].map(esc).join(';'))].join('\n');res.type('text/csv; charset=utf-8').set('Content-Disposition','attachment; filename="hygiesafe-export.csv"').send('\ufeff'+csv);}));
+export default r;

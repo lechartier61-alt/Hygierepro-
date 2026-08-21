@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://lgy.fr/sitemap.xml

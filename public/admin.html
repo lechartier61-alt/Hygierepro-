@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HygieSafe Administration</title>
+  <link rel="icon" href="/assets/icon-192.png">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<section class="auth-main" id="adminLogin" style="min-height:100vh">
+  <form class="auth-card" id="adminLoginForm">
+    <div class="brand brand-full"><img src="/assets/logo-hygiesafe.png" alt="HygieSafe — Hygiène, sécurité, traçabilité"></div>
+    <h2>Administration</h2>
+    <p class="muted">Centre de supervision sécurisé HygieSafe.</p><div class="notice good admin-login-help">Le premier compte Admin est créé automatiquement au déploiement à partir de <b>ADMIN_EMAIL</b> et <b>ADMIN_PASSWORD</b>.</div>
+    <div class="field"><label>E-mail</label><input name="email" type="email" required></div>
+    <div class="field"><label>Mot de passe</label><input name="password" type="password" required></div>
+    <div class="field"><label>Code 2FA <small>(si activé)</small></label><input name="code" inputmode="numeric" autocomplete="one-time-code"></div>
+    <button class="btn primary" type="submit">Se connecter</button>
+    <div class="form-msg" id="adminLoginMsg"></div>
+  </form>
+</section>
+
+<div id="adminApp" class="hidden">
+  <header class="app-top">
+    <div class="app-brand"><img src="/assets/icon-192.png" alt=""><span>HygieSafe · Admin</span></div>
+    <div class="user-zone admin-user-zone"><span class="admin-page-name" id="adminCurrentPage">Vue globale</span><select id="adminMobileNav" class="admin-mobile-nav" aria-label="Changer de rubrique"><option value="dashboard">Vue globale</option><option value="organizations">Entreprises</option><option value="users">Utilisateurs</option><option value="billing">Abonnements</option><option value="usage">Utilisation</option><option value="promos">Codes promo</option><option value="site">Site public</option><option value="incidents">Incidents</option><option value="system">État système</option><option value="audit">Journal</option></select><span id="adminName"></span><button class="small-btn" id="adminLogout">Déconnexion</button></div>
+  </header>
+  <div class="layout admin-layout">
+    <aside class="sidebar admin-sidebar">
+      <div class="nav-group">
+        <div class="nav-label">Essentiel</div>
+        <button class="nav-btn on" data-admin-page="dashboard"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/home.png" alt="">Vue globale</button>
+        <button class="nav-btn" data-admin-page="organizations"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/inventory.png" alt="">Entreprises</button>
+        <button class="nav-btn" data-admin-page="users"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/team.png" alt="">Utilisateurs</button>
+        <button class="nav-btn" data-admin-page="billing"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/orders.png" alt="">Abonnements & CA</button>
+        </div>
+      <div class="nav-group">
+        <div class="nav-label">Gestion</div>
+        <button class="nav-btn" data-admin-page="usage"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/scanner.png" alt="">Utilisation</button>
+        <button class="nav-btn" data-admin-page="promos"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/profile.png" alt="">Codes promo</button>
+        <button class="nav-btn" data-admin-page="site"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/home.png" alt="">Site public</button>
+      </div>
+      <div class="nav-group admin-advanced-nav">
+        <div class="nav-label">Avancé</div>
+        <button class="nav-btn" data-admin-page="incidents"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/temperature.png" alt="">Incidents</button>
+        <button class="nav-btn" data-admin-page="system"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/controls.png" alt="">État du système</button>
+        <button class="nav-btn" data-admin-page="audit"><img class="hs-nav-icon" src="/assets/hygiesafe-icons/archive.png" alt="">Journal d’activité</button>
+      </div>
+    </aside>
+
+    <main class="main admin-main">
+      <section class="page on" id="admin-dashboard">
+        <div class="page-head"><div><h1>Vue globale</h1><p>Les informations importantes d’abord. Les détails techniques restent disponibles dans les rubriques avancées.</p></div><button class="btn" id="refreshDashboard">Actualiser</button></div>
+        <div class="admin-live-strip" id="adminLiveStrip"></div>
+        <div class="admin-start-grid" aria-label="Raccourcis administrateur">
+          <button class="admin-start-card" data-admin-jump="organizations"><img src="/assets/hygiesafe-icons/inventory.png" alt=""><span><b>Entreprises</b><small>Voir, rechercher ou ouvrir un compte client</small></span><i>→</i></button>
+          <button class="admin-start-card" data-admin-jump="users"><img src="/assets/hygiesafe-icons/team.png" alt=""><span><b>Utilisateurs</b><small>Comptes, rôles et dernière activité</small></span><i>→</i></button>
+          <button class="admin-start-card" data-admin-jump="billing"><img src="/assets/hygiesafe-icons/orders.png" alt=""><span><b>Abonnements</b><small>Revenus, essais et paiements</small></span><i>→</i></button>
+          <button class="admin-start-card" data-admin-jump="incidents"><img src="/assets/hygiesafe-icons/controls.png" alt=""><span><b>À surveiller</b><small>Incidents et problèmes importants</small></span><i>→</i></button>
+        </div>
+        <h2 class="admin-subtitle">Les chiffres essentiels</h2>
+        <div class="cards admin-kpis admin-kpis-essential" id="adminKpis"></div>
+        <div class="admin-section-grid">
+          <div class="card"><div class="admin-card-head"><div><h3>À surveiller</h3><small>Priorités automatiques</small></div></div><div class="list" id="adminPriorities"></div></div>
+          <div class="card"><div class="admin-card-head"><div><h3>Activité récente</h3><small>Derniers espaces actifs</small></div></div><div class="list" id="adminRecent"></div></div>
+        </div>
+        <div class="admin-section-grid three">
+          <div class="card"><h3>Utilisateurs</h3><div id="adminUserSummary" class="admin-stat-list"></div></div>
+          <div class="card"><h3>Usage produit</h3><div id="adminUsageSummary" class="admin-stat-list"></div></div>
+          <div class="card"><h3>Commerce fournisseurs</h3><div id="adminCommerceSummary" class="admin-stat-list"></div></div>
+        </div>
+        <div class="admin-section-grid">
+          <div class="card"><h3>Versions installées</h3><div class="list" id="adminVersions"></div></div>
+          <div class="card"><h3>Stockage & sécurité</h3><div id="adminSecuritySummary" class="admin-stat-list"></div></div>
+        </div>
+      </section>
+
+      <section class="page" id="admin-organizations">
+        <div class="page-head"><div><h1>Entreprises</h1><p>Tous les espaces clients avec activité, abonnement, stockage, volume de données et usage des modules.</p></div><div class="admin-actions"><button class="btn primary" id="createDemoAccount">+ Compte test client</button><button class="btn" id="refreshOrgs">Actualiser</button></div></div>
+        <div class="admin-toolbar"><input id="orgSearch" type="search" placeholder="Rechercher entreprise, gérant, ville, e-mail…"><select id="orgFilter"><option value="all">Tous les statuts</option><option value="active">Actives</option><option value="trialing">Essais</option><option value="active-sub">Abonnées</option><option value="past_due">Paiement en retard</option><option value="suspended">Suspendues</option><option value="inactive">Inactives +14 jours</option></select><span id="orgCount" class="badge"></span></div>
+        <div class="table-wrap admin-wide-table"><table><thead><tr><th>Entreprise</th><th>Gérant</th><th>Utilisateurs</th><th>Activité</th><th>Données</th><th>Abonnement</th><th>CA encaissé</th><th>Version</th><th></th></tr></thead><tbody id="orgRows"></tbody></table></div>
+      </section>
+
+      <section class="page" id="admin-users">
+        <div class="page-head"><div><h1>Utilisateurs</h1><p>Comptes gérants, responsables et employés, connexions, vérification e-mail et activité.</p></div><button class="btn" id="refreshUsers">Actualiser</button></div>
+        <div class="cards admin-kpis compact" id="userKpis"></div>
+        <div class="admin-toolbar"><input id="userSearch" type="search" placeholder="Nom, e-mail ou entreprise…"><select id="userFilter"><option value="all">Tous les comptes</option><option value="online">En ligne / actif récemment</option><option value="unverified">E-mail non vérifié</option><option value="owner">Gérants</option><option value="manager">Responsables</option><option value="employee">Employés</option><option value="disabled">Désactivés</option></select><span id="userCount" class="badge"></span></div>
+        <div class="table-wrap admin-wide-table"><table><thead><tr><th>Utilisateur</th><th>Entreprise</th><th>Rôle</th><th>État</th><th>Dernière connexion</th><th>Dernière activité</th><th>Sessions</th><th>Données créées</th></tr></thead><tbody id="userRows"></tbody></table></div>
+      </section>
+
+      <section class="page" id="admin-billing">
+        <div class="page-head"><div><h1>Abonnements & chiffre d’affaires</h1><p>MRR, revenus encaissés, essais, retards de paiement et historique des paiements.</p></div><button class="btn" id="refreshBilling">Actualiser</button></div>
+        <div class="admin-plan-banner"><div><small>Tarif standard HygieSafe</small><b id="adminStandardPrice">9,99 € / mois / entreprise</b></div><span>14 jours d’essai gratuit · sans carte bancaire</span></div>
+        <div class="cards admin-kpis" id="billingKpis"></div>
+        <div class="admin-section-grid">
+          <div class="card"><h3>Répartition des abonnements</h3><div id="billingStatuses" class="admin-stat-list"></div></div>
+          <div class="card"><h3>30 derniers jours</h3><div id="billingTrend" class="admin-mini-bars"></div></div>
+        </div>
+        <div class="card"><div class="admin-card-head"><div><h3>Derniers paiements</h3><small>150 opérations maximum</small></div></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Entreprise</th><th>Montant</th><th>Statut</th><th>Facture Stripe</th></tr></thead><tbody id="paymentRows"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="admin-usage">
+        <div class="page-head"><div><h1>Utilisation de HygieSafe</h1><p>Volumes par module, activité sur 30 jours et entreprises les plus actives.</p></div><button class="btn" id="refreshUsage">Actualiser</button></div>
+        <div class="cards admin-kpis compact" id="usageKpis"></div>
+        <div class="admin-section-grid">
+          <div class="card"><h3>Enregistrements par module</h3><div id="usageTypes" class="admin-stat-list"></div></div>
+          <div class="card"><h3>Entreprises les plus actives</h3><div class="list" id="usageTopOrgs"></div></div>
+        </div>
+        <div class="card"><h3>Activité quotidienne · 30 jours</h3><div id="usageDaily" class="admin-mini-bars"></div></div>
+      </section>
+
+      <section class="page" id="admin-system">
+        <div class="page-head"><div><h1>État du système</h1><p>Serveur, base de données, sessions, stockage, intégrations et indicateurs de sécurité — sans exposer les secrets.</p></div><button class="btn" id="refreshSystem">Actualiser</button></div>
+        <div class="cards admin-kpis compact" id="systemKpis"></div>
+        <div class="admin-section-grid">
+          <div class="card"><h3>Application & serveur</h3><div id="runtimeInfo" class="admin-info-grid"></div></div>
+          <div class="card"><h3>Intégrations</h3><div id="integrationInfo" class="admin-stat-list"></div></div>
+        </div>
+        <div class="admin-section-grid">
+          <div class="card"><h3>Sécurité</h3><div id="securityInfo" class="admin-stat-list"></div></div>
+          <div class="card"><h3>Administrateurs</h3><div id="adminAccounts" class="list"></div></div>
+        </div>
+        <div class="card"><h3>Configuration réseau</h3><div id="networkInfo" class="admin-info-grid"></div></div>
+      </section>
+
+      <section class="page" id="admin-incidents">
+        <div class="page-head"><div><h1>Incidents techniques</h1><p>Erreurs serveur enregistrées automatiquement, organisation concernée et état de résolution.</p></div><button class="btn" id="refreshIncidents">Actualiser</button></div>
+        <div class="admin-toolbar"><input id="incidentSearch" type="search" placeholder="Rechercher route, entreprise, message…"><select id="incidentFilter"><option value="open">Ouverts</option><option value="all">Tous</option><option value="resolved">Résolus</option></select><span id="incidentCount" class="badge"></span></div>
+        <div class="list" id="incidentList"></div>
+      </section>
+
+      <section class="page" id="admin-audit">
+        <div class="page-head"><div><h1>Journal d’activité</h1><p>Actions administrateur et utilisateurs, avec entreprise, entité et date.</p></div><button class="btn" id="refreshAudit">Actualiser</button></div>
+        <div class="admin-toolbar"><input id="auditSearch" type="search" placeholder="Action, acteur, entreprise…"><span id="auditCount" class="badge"></span></div>
+        <div class="list" id="adminAuditList"></div>
+      </section>
+
+      <section class="page" id="admin-promos">
+        <div class="page-head"><div><h1>Codes promo</h1><p>Remises commerciales et nombre d’utilisations.</p></div><button class="btn primary" id="newPromo">+ Nouveau</button></div><div class="list" id="promoList"></div>
+      </section>
+
+      <section class="page" id="admin-site">
+        <div class="page-head"><div><h1>Site public</h1><p>Contenu de l’accueil et informations juridiques.</p></div></div>
+        <form class="card" id="siteForm"><div class="field"><label>Titre</label><input name="heroTitle"></div><div class="field"><label>Sous-titre</label><textarea name="heroSubtitle"></textarea></div><div class="field"><label>URL vidéo (facultatif)</label><input name="heroVideoUrl"></div><div class="field"><label>URL image de secours</label><input name="heroFallbackUrl"></div><div class="field"><label>E-mail support</label><input name="supportEmail" type="email"></div><button class="btn primary">Enregistrer</button></form>
+        <form class="card" id="heroUploadForm"><h3>Importer une nouvelle vidéo / image</h3><div class="field"><input name="file" type="file" accept="video/*,image/*" required></div><button class="btn">Importer</button></form>
+        <div class="card"><h3>Informations légales</h3><p class="muted">Uniquement les informations utiles aux mentions légales obligatoires.</p><form id="legalAdminForm" class="form-grid"><div class="field"><label>Raison sociale</label><input name="companyName"></div><div class="field"><label>Forme juridique</label><input name="form"></div><div class="field"><label>Capital social</label><input name="capital"></div><div class="field"><label>RCS</label><input name="rcs"></div><div class="field"><label>RNE</label><input name="rne"></div><div class="field"><label>TVA intracommunautaire</label><input name="vat"></div><div class="field"><label>Directeur de publication</label><input name="publisher"></div><div class="field full"><label>Adresse du siège</label><input name="address"></div><div class="field"><label>E-mail de contact</label><input name="email" type="email" required><small>Adresse réellement consultée ; elle sert aussi de contact confidentialité si aucun contact distinct n’est configuré.</small></div><div class="field"><label>Téléphone</label><input name="phone" type="tel" required><small>Numéro joignable publié dans les mentions légales.</small></div><div class="field full"><button class="btn primary">Enregistrer le juridique</button></div></form></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="modal hidden" id="adminModal"><div class="modal-card admin-modal-card"><div class="modal-head"><h2 id="adminModalTitle"></h2><button class="close" id="adminModalClose">×</button></div><div id="adminModalBody"></div></div></div>
+<script type="module" src="/js/admin.js"></script>
+</body>
+</html>
