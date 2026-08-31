@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#087443">
+  <title>Nouveau mot de passe — HygieSafe</title>
+  <link rel="icon" href="/assets/icon-192.png">
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<main class="auth-shell auth-shell-compact">
+  <aside class="auth-side">
+    <a class="brand brand-full" href="/" aria-label="HygieSafe"><img src="/assets/logo-hygiesafe.png" alt="HygieSafe — Hygiène, sécurité, traçabilité"></a>
+    <div><h1>Choisissez un nouvel accès.</h1><p>Votre nouveau mot de passe protège l’ensemble de votre espace professionnel.</p></div>
+    <small>HygieSafe · sécurité du compte</small>
+  </aside>
+  <section class="auth-main">
+    <a class="brand auth-mobile-brand brand-full" href="/" aria-label="HygieSafe"><img src="/assets/logo-hygiesafe.png" alt="HygieSafe"></a>
+    <form class="auth-card" id="resetForm">
+      <div class="auth-kicker">Sécurité du compte</div>
+      <h2>Nouveau mot de passe</h2>
+      <p class="muted auth-intro">Utilisez au minimum 12 caractères et évitez un mot de passe déjà utilisé ailleurs.</p>
+      <div class="field"><label for="resetPassword">Nouveau mot de passe</label><input id="resetPassword" name="password" type="password" minlength="12" autocomplete="new-password" required><small class="muted">12 caractères minimum.</small></div>
+      <button class="btn primary auth-submit" type="submit"><span>Enregistrer</span><span class="btn-arrow" aria-hidden="true">→</span></button>
+      <div class="form-msg" id="msg" role="status" aria-live="polite"></div>
+      <div class="auth-divider"><span>annuler</span></div>
+      <a class="auth-secondary-action" href="/login.html"><span><strong>Revenir à la connexion</strong><small>Ne pas modifier mon mot de passe</small></span><span aria-hidden="true">→</span></a>
+    </form>
+  </section>
+</main>
+<script type="module" src="/js/auth-pages.js"></script>
+</body>
+</html>

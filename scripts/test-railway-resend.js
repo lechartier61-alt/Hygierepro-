@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+let fail=0;const ok=m=>console.log('✓',m),bad=m=>{fail++;console.error('✗',m)};
+const server=fs.readFileSync(new URL('../src/server.js',import.meta.url),'utf8');
+const config=fs.readFileSync(new URL('../src/config.js',import.meta.url),'utf8');
+const mailer=fs.readFileSync(new URL('../src/services/mailer.js',import.meta.url),'utf8');
+const stripe=fs.readFileSync(new URL('../src/services/stripe.js',import.meta.url),'utf8');
+const security=fs.readFileSync(new URL('../src/middleware/security.js',import.meta.url),'utf8');
+const publicRoute=fs.readFileSync(new URL('../src/routes/public.js',import.meta.url),'utf8');
+server.includes("app.listen(config.port,'0.0.0.0'")?ok('écoute Railway explicite 0.0.0.0:$PORT'):bad('host Railway manquant');
+server.includes("app.get('/health/live'")?ok('endpoint liveness présent'):bad('endpoint liveness absent');
+mailer.includes('config.resend.apiKey&&config.resend.from')?ok('Resend exige clé + expéditeur'):bad('Resend partiellement configuré accepté');
+!config.includes("errors.push('RESEND_FROM est obligatoire")?ok('Resend incomplet ne fait plus tomber le serveur'):bad('Resend incomplet peut encore stopper le serveur');
+stripe.includes('!config.stripe.secretKey||!config.stripe.webhookSecret')?ok('Stripe incomplet désactivé au niveau fonctionnel'):bad('Stripe partiel encore actif');
+security.includes('origin===requestOrigin')?ok('domaine personnalisé réellement same-origin autorisé'):bad('same-origin custom domain non couvert');
+security.includes('config.allowedOrigins')?ok('alias de domaines configurables via ALLOWED_ORIGINS'):bad('ALLOWED_ORIGINS absent');
+publicRoute.includes('LIVRICI SOLUTIONS SAS')&&publicRoute.includes('100 815 471')?ok('identité juridique intégrée'):bad('identité juridique absente');
+if(fail)process.exit(1);console.log('Railway/Resend: régression couverte.');

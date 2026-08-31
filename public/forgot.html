@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#087443">
+  <title>Mot de passe oublié — HygieSafe</title>
+  <link rel="icon" href="/assets/icon-192.png">
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<main class="auth-shell auth-shell-compact">
+  <aside class="auth-side">
+    <a class="brand brand-full" href="/" aria-label="HygieSafe"><img src="/assets/logo-hygiesafe.png" alt="HygieSafe — Hygiène, sécurité, traçabilité"></a>
+    <div><h1>Retrouvez votre accès.</h1><p>Un lien sécurisé suffit pour choisir un nouveau mot de passe.</p></div>
+    <small>HygieSafe · accès professionnel sécurisé</small>
+  </aside>
+  <section class="auth-main">
+    <a class="brand auth-mobile-brand brand-full" href="/" aria-label="HygieSafe"><img src="/assets/logo-hygiesafe.png" alt="HygieSafe"></a>
+    <form class="auth-card" id="forgotForm">
+      <div class="auth-kicker">Récupération du compte</div>
+      <h2>Mot de passe oublié</h2>
+      <p class="muted auth-intro">Saisissez votre e-mail professionnel. Si le compte existe, nous vous envoyons un lien de réinitialisation.</p>
+      <div class="field"><label for="forgotEmail">E-mail</label><input id="forgotEmail" name="email" type="email" autocomplete="email" required></div>
+      <button class="btn primary auth-submit" type="submit"><span>Envoyer le lien</span><span class="btn-arrow" aria-hidden="true">→</span></button>
+      <div class="form-msg" id="msg" role="status" aria-live="polite"></div>
+      <div class="auth-divider"><span>retour</span></div>
+      <a class="auth-secondary-action" href="/login.html"><span><strong>Revenir à la connexion</strong><small>Accéder à mon espace HygieSafe</small></span><span aria-hidden="true">→</span></a>
+    </form>
+  </section>
+</main>
+<script type="module" src="/js/auth-pages.js"></script>
+</body>
+</html>

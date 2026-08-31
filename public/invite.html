@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#087443">
+  <title>Invitation — HygieSafe</title>
+  <link rel="icon" href="/assets/icon-192.png">
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<main class="auth-shell auth-shell-compact">
+  <aside class="auth-side">
+    <a class="brand brand-full" href="/" aria-label="HygieSafe"><img src="/assets/logo-hygiesafe.png" alt="HygieSafe — Hygiène, sécurité, traçabilité"></a>
+    <div><h1>Votre équipe vous attend.</h1><p>Activez votre accès personnel pour retrouver vos journées, contrôles et outils autorisés.</p></div>
+    <small>HygieSafe · un accès personnel par membre</small>
+  </aside>
+  <section class="auth-main">
+    <a class="brand auth-mobile-brand brand-full" href="/" aria-label="HygieSafe"><img src="/assets/logo-hygiesafe.png" alt="HygieSafe"></a>
+    <form class="auth-card" id="inviteForm">
+      <div class="auth-kicker">Invitation d’équipe</div>
+      <h2>Rejoindre l’équipe</h2>
+      <p class="muted auth-intro" id="inviteInfo">Vérification de l’invitation…</p>
+      <div id="inviteFields" class="hidden">
+        <div class="field"><label for="inviteName">Votre nom</label><input id="inviteName" name="name" autocomplete="name"></div>
+        <div class="field"><label for="invitePassword">Créer votre mot de passe</label><input id="invitePassword" name="password" type="password" minlength="12" autocomplete="new-password" required><small class="muted">12 caractères minimum.</small></div>
+        <button class="btn primary auth-submit" type="submit"><span>Activer mon accès</span><span class="btn-arrow" aria-hidden="true">→</span></button>
+      </div>
+      <div class="form-msg" id="msg" role="status" aria-live="polite"></div>
+      <div class="auth-divider"><span>HygieSafe</span></div>
+      <a class="auth-secondary-action" href="/login.html"><span><strong>J’ai déjà un compte</strong><small>Revenir à la connexion</small></span><span aria-hidden="true">→</span></a>
+    </form>
+  </section>
+</main>
+<script type="module" src="/js/auth-pages.js"></script>
+</body>
+</html>

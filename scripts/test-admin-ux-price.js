@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const checks=[]; const ok=(name,cond)=>checks.push([name,!!cond]);
+const index=read('public/index.html'),register=read('public/register.html'),faq=read('public/faq.html'),cgv=read('public/cgv.html'),admin=read('public/admin.html'),adminJs=read('public/js/admin.js'),cfg=read('src/config.js'),migration=read('db/migrations/022_price_999_admin_ux.sql');
+ok('Accueil affiche 9,99 €',index.includes('9,99 €')&&!index.includes('7,99 €'));
+ok('Inscription affiche 9,99 €',register.includes('9,99 €/mois'));
+ok('FAQ affiche 9,99 €',faq.includes('9,99 €')&&!faq.includes('7,99 €'));
+ok('CGV affiche 9,99 €',cgv.includes('9,99 €')&&!cgv.includes('7,99 €'));
+ok('Stripe standard = 999 centimes',cfg.includes('amountCents: 999'));
+ok('Migration tarif = 999',migration.includes('monthly_amount_cents = 999'));
+ok('Raccourcis admin présents',admin.includes('admin-start-grid')&&admin.includes('data-admin-jump="organizations"'));
+ok('Navigation mobile admin présente',admin.includes('adminMobileNav'));
+ok('Tarif standard visible dans admin',admin.includes('adminStandardPrice'));
+ok('Vocabulaire Responsable',adminJs.includes("manager:'Responsable'"));
+for(const [n,v] of checks)console.log(`${v?'OK':'FAIL'} - ${n}`);
+if(checks.some(x=>!x[1]))process.exit(1);
+console.log(`Admin UX & prix: ${checks.length}/${checks.length}`);
