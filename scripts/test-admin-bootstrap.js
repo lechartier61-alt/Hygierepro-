@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+let fail=0;const ok=m=>console.log('✓',m),bad=m=>{console.error('✗',m);fail++};
+const server=fs.readFileSync(new URL('../src/server.js',import.meta.url),'utf8');
+const service=fs.readFileSync(new URL('../src/services/admin-bootstrap.js',import.meta.url),'utf8');
+const route=fs.readFileSync(new URL('../src/routes/admin.js',import.meta.url),'utf8');
+const ui=fs.readFileSync(new URL('../public/js/admin.js',import.meta.url),'utf8');
+server.includes('await bootstrapFirstAdmin()')?ok('bootstrap exécuté au démarrage'):bad('bootstrap absent du démarrage');
+service.includes("count(*)::int total")&&service.includes("if(Number(stats?.total||0)>0)")?ok('aucun écrasement si un admin existe'):bad('protection admin existant absente');
+service.includes('ADMIN_EMAIL')&&service.includes('ADMIN_PASSWORD')?ok('variables admin utilisées'):bad('variables admin absentes');
+service.includes('password.length<14')?ok('mot de passe admin 14+'):bad('validation mot de passe absente');
+route.includes("r.get('/auth/status'")?ok('endpoint de diagnostic présent'):bad('diagnostic absent');
+route.includes('twoFactorReady:!!config.fieldEncryptionKey')?ok('état 2FA sans secret exposé'):bad('état 2FA absent');
+ui.includes('field_encryption_key_missing')?ok('erreur FIELD_ENCRYPTION_KEY expliquée'):bad('erreur 2FA non gérée');
+ui.includes('await setup2fa()')?ok('setup 2FA attendu correctement'):bad('setup 2FA non attendu');
+if(fail)process.exit(1);console.log('Admin bootstrap : 8/8');

@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { classifyScan } from '../src/services/scan-classifier.js';
+
+let pass=0;const t=(name,fn)=>{fn();pass++;console.log('✓',name)};
+const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const app=read('public/js/app.js'),html=read('public/app.html'),css=read('public/css/app.css');
+const route=read('src/routes/workdays.js'),migration=read('db/migrations/028_guided_workdays_auto_scanner.sql');
+const media=read('src/routes/media.js'),records=read('src/routes/records.js'),api=read('public/js/api.js'),backup=read('src/services/backup.js');
+
+t('classification facture',()=>assert.equal(classifyScan({rawText:'FACTURE N° 458 TOTAL HT 42,00 TVA 8,40 TOTAL TTC 50,40',invoice:{invoiceNo:'458',totalHt:42,totalTtc:50.4,lineCount:4}}).type,'invoice'));
+t('classification bon de livraison',()=>assert.equal(classifyScan({rawText:'BON DE LIVRAISON BL N° 18 FOURNISSEUR QUANTITE PRODUIT',invoice:{lineCount:3}}).type,'delivery_note'));
+t('classification étiquette produit',()=>assert.equal(classifyScan({rawText:'JAMBON LOT A145 DLC 28/08/2026',product:'Jambon',lot:'A145',expiryDate:'2026-08-28'}).type,'product_label'));
+t('classification photo sans texte',()=>assert.equal(classifyScan({rawText:''}).type,'photo'));
+t('page scanner automatique',()=>assert.match(html,/Vous n’avez plus à choisir avant de scanner|Scanner une DLC/));
+t('caméra et galerie automatiques',()=>{assert.match(html,/autoScanCamera/);assert.match(html,/autoScanGallery/)});
+t('confirmation uniquement en cas de doute',()=>assert.match(app,/requiresConfirmation/));
+t('origine automatique conservée après analyse',()=>assert.match(app,/scanAutoOrigin/));
+t('page Ma journée Employé',()=>assert.match(html,/id="page-myday"/));
+t('page Journées équipe',()=>assert.match(html,/id="page-workdays"/));
+t('barre vert orange rouge',()=>{assert.match(app,/ratio<\.75\?'green':ratio<=1\?'orange':'red'/);assert.match(css,/\.guided-step\.orange/);assert.match(css,/\.guided-step\.red/)});
+t('preuve photo obligatoire possible',()=>{assert.match(migration,/proof_required boolean/);assert.match(app,/Photo de preuve obligatoire/)});
+t('photo modèle par étape',()=>assert.match(migration,/reference_media_id uuid REFERENCES media/));
+t('passage automatique à étape suivante',()=>assert.match(route,/UPDATE workday_steps SET status='active',started_at=now\(\)/));
+t('contrôle HACCP récent relié à l’étape',()=>assert.match(route,/const expected=\(\{temperature:'temperature',cleaning:'cleaning',traceability:'traceability',reception:'reception'\}\)/));
+t('retard terminé conservé pour le responsable',()=>assert.match(route,/completed_at > s.started_at/));
+t('employé limité à sa journée',()=>assert.match(route,/plan\.employee_id===req\.user\.id/));
+t('preuve employé limitée à son upload et à l’étape en cours',()=>{assert.match(route,/uploadedBy:req\.user\.role==='employee'\?req\.user\.id:null/);assert.match(route,/notBefore:req\.user\.role==='employee'\?step\.started_at:null/)});
+t('édition terrain Employé durcie',()=>assert.match(records,/age>10\*60\*1000/));
+t('suppression media Employé durcie',()=>assert.match(media,/Cette photo est déjà liée à une preuve/));
+t('file hors ligne liée utilisateur + entreprise',()=>{assert.match(api,/organizationId/);assert.match(api,/userId/);assert.match(api,/offline_identity_missing/)});
+t('journées et preuves dans sauvegarde ZIP',()=>{assert.match(backup,/journees-employes\.json/);assert.match(backup,/programme-et-historique\.json/)});
+t('migration v6.6.0 présente',()=>assert.match(migration,/app_version='6\.6\.0'/));
+t('formulation sauvegarde serveur corrigée',()=>{const home=read('public/index.html');assert.match(home,/Sauvegarde complète exportable \(ZIP\)/);assert.doesNotMatch(home,/Sauvegarde serveur automatique/)});
+t('ancien domaine retiré de .env.example',()=>assert.doesNotMatch(read('.env.example'),/hygiesafe\.fr/));
+t('données externes séparées des fiches validées',()=>assert.match(migration,/source = 'user_validated'/));
+console.log(`HygieSafe v6.6.0 — Scanner auto + Journées guidées : ${pass}/26`);

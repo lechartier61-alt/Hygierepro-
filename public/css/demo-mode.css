@@ -1,0 +1,12 @@
+/* Bandeau visible sur toutes les pages du compte de demonstration. */
+.demo-data-banner{position:sticky;top:0;z-index:1000;background:#fff0ce;color:#63370b;border-bottom:2px solid #ca8120;display:flex;align-items:center;gap:12px;padding:10px 20px;line-height:1.4;box-shadow:0 2px 7px #71421020;font-size:13px}
+.demo-data-banner.hidden{display:none!important}
+.demo-data-banner strong{font-size:12px;letter-spacing:.035em;white-space:nowrap}
+.demo-data-banner span{max-width:920px}
+.demo-record-flag{background:#fff0ce;color:#754007;border:1px solid #e9bc66;border-radius:5px;padding:2px 5px;margin-left:5px;font-size:10px;font-weight:800}
+body.demo-mode .demo-record-flag{display:inline-block}
+@media(max-width:680px){.demo-data-banner{display:block;padding:9px 12px;font-size:12px}.demo-data-banner strong{display:block;margin-bottom:3px}}
+
+.demo-history-link{background:#723b09;color:#fff;border:0;border-radius:8px;padding:7px 12px;font-weight:700;white-space:nowrap;cursor:pointer}
+.demo-history-link:hover{background:#512a06}
+@media(max-width:680px){.demo-history-link{margin-top:6px;width:100%}}

@@ -1,0 +1,29 @@
+{
+  "id": "/app.html",
+  "name": "HygieSafe",
+  "short_name": "HygieSafe",
+  "description": "Gestion simple des contrôles, températures, DLC et traçabilité.",
+  "lang": "fr-FR",
+  "start_url": "/app.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f7f5",
+  "theme_color": "#087443",
+  "orientation": "any",
+  "categories": ["business", "productivity"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {generateDemoBoulangerie,DEMO_FIXED_END_DATE} from './lib/demo-boulangerie-data.js';
+const rows=generateDemoBoulangerie({endDate:process.env.DEMO_END_DATE||DEMO_FIXED_END_DATE});
+const out=process.argv[2]||path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../DEMO-BOULANGERIE-TEMPERATURES.csv');
+const col=(v)=>String(v??'').replaceAll('"','""');
+const escape=(v)=>'"'+col(v)+'"';
+const header=['Date','Heure','Equipement','Temperature_C','Min_C','Max_C','Conforme','Type_donnees','Commentaire'];
+const csv=[header,...rows.map(r=>[r.date,r.time,r.equipment,r.value.toFixed(1).replace('.',','),r.min,r.max,r.conforme?'oui':'non','DONNEE DE DEMONSTRATION',r.note])].map(row=>row.map(escape).join(';')).join('\r\n');
+fs.writeFileSync(out,'\ufeff'+csv+'\r\n','utf8');
+console.log(`Jeu de donnees de demonstration (sans mesure physique) : ${rows.length} releves de temperature -> ${out}`);
